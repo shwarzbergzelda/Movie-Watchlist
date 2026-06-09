@@ -89,3 +89,22 @@ nav > a {
     width: 30px;
     margin-left: 20px;
 }
+
+/* Movies Container */
+
+.movies-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 300px - 30px);
+}
+
+.movie-reel-icon {
+    width: 100px;
+}
+
+.explore-header {
+    font-size: 30px;
+    color: rgba(223, 221, 221, 1);
+}
