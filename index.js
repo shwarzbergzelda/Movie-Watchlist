@@ -1,37 +1,41 @@
 const searchForm = document.getElementById('search-form')
 const moviesContainer = document.getElementById('movies-container')
+let watchlist = JSON.parse(localStorage.getItem("watchlist")) || []
+const isWatchlistPage = window.location.pathname.endsWith('watchlist.html')
+const movies = []
 
-searchForm.addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    const url = 'http://www.omdbapi.com/?apikey=b88f89ad'
-    const formData = new FormData(searchForm)
-    const searchInput = formData.get('search-input')
-    let imdbIDs = []
-
-    fetch(`${url}&s=${encodeURIComponent(searchInput)}&type=movie`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.Response === "False") {
-                renderSearchFail()
-                return;
-            }
-
-            imdbIDs = data.Search.map((movie) => movie.imdbID)
-            
-            const movies = []
-            imdbIDs.forEach((imdbID) => {
-                fetch(`${url}&i=${imdbID}`)
-                    .then(response => response.json())
-                    .then(movie => {
-                        movies.push(movie)
-                        if (movies.length === imdbIDs.length) {
-                            renderMovies(movies)
-                        }
+if (searchForm) { // only run the following code if on the main homepage with the search bar
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+    
+        const url = 'http://www.omdbapi.com/?apikey=b88f89ad'
+        const formData = new FormData(searchForm)
+        const searchInput = formData.get('search-input')
+        let imdbIDs = []
+    
+        fetch(`${url}&s=${encodeURIComponent(searchInput)}&type=movie`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Response === "False") {
+                    renderSearchFail()
+                    return;
+                }
+    
+                imdbIDs = data.Search.map((movie) => movie.imdbID)
+    
+                imdbIDs.forEach((imdbID) => {
+                    fetch(`${url}&i=${imdbID}`)
+                        .then(response => response.json())
+                        .then(movie => {
+                            movies.push(movie)
+                            if (movies.length === imdbIDs.length) {
+                                renderMovies(movies)
+                            }
+                    })
                 })
             })
-        })
-})
+    })
+}
 
 function renderSearchFail() {
     moviesContainer.innerHTML = `
@@ -42,9 +46,10 @@ function renderSearchFail() {
 function renderMovies(movies) {
     const moviesHTML = movies.map((movie) => {
 
-        const {Poster, Title, imdbRating, Runtime, Genre, Plot} = movie
+        const {Poster, Title, imdbRating, Runtime, Genre, Plot, imdbID} = movie
 
 
+        // do not display 'N/A' on movie results
         const runtime = Runtime !== 'N/A' ? Runtime : ''
         const genre = Genre !== 'N/A' ? Genre : ''
         const plot = Plot !== 'N/A' ? Plot : 'No plot available.'
@@ -68,8 +73,23 @@ function renderMovies(movies) {
                     <div class="movie-meta">
                         ${runtime ? `<p class="runtime">${runtime}</p>` : ''}
                         ${genre ? `<p class="genre">${genre}</p>` : ''}
-                        <div class="add-to-watchlist">
-                            <img class="add-icon" src="./images/add-icon.png" alt="add movie icon">
+                        <div class="watchlist-toggle">
+                            ${
+                                watchlist.some(movie => movie.imdbID === imdbID) 
+                                ? `
+                                <img
+                                    data-imdb-id="${imdbID}" 
+                                    class="remove-from-watchlist toggle-watchlist-icon" 
+                                    src="./images/remove-icon.png" 
+                                    alt="remove movie icon">` 
+                                    
+                                : `
+                                <img 
+                                    data-imdb-id="${imdbID}" 
+                                    class="add-to-watchlist toggle-watchlist-icon" 
+                                    src="./images/add-icon.png" 
+                                    alt="add movie icon">
+                                `}
                             <p class="watchlist">Watchlist</p>
                         </div>
                     </div>
@@ -81,3 +101,44 @@ function renderMovies(movies) {
 
     moviesContainer.innerHTML = moviesHTML
 }
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('add-to-watchlist')) {
+
+        // add movie selected to localStorage
+        const imdbID = e.target.dataset.imdbId
+        const movieToAdd = movies.find((movie) => movie.imdbID === imdbID)
+        console.log(movieToAdd)
+
+        if (!watchlist.some(movie => movie.imdbID === imdbID)) {
+            watchlist.push(movieToAdd)
+            localStorage.setItem('watchlist', JSON.stringify(watchlist))
+        }
+
+
+        // change add to watchlist option to remove from watchlist
+        const watchlistToggle = e.target.closest('.watchlist-toggle')
+        watchlistToggle.innerHTML = `
+            <img data-imdb-ID="${imdbID}" class="remove-from-watchlist toggle-watchlist-icon" src="./images/remove-icon.png" alt="remove movie icon">
+            <p class="watchlist">Watchlist</p>
+        `
+    }
+
+    if (e.target.classList.contains('remove-from-watchlist')) {
+        const imdbID = e.target.dataset.imdbId
+        
+        watchlist = watchlist.filter((movie) => movie.imdbID !== imdbID)
+        
+        if (!watchlist.length) {
+            localStorage.removeItem('watchlist')
+        } else {
+            localStorage.setItem('watchlist', JSON.stringify(watchlist))
+        }
+
+        const watchlistToggle = e.target.closest('.watchlist-toggle')
+        watchlistToggle.innerHTML = `
+            <img data-imdb-ID="${imdbID}" class="add-to-watchlist toggle-watchlist-icon" src="./images/add-icon.png" alt="add movie icon">
+            <p class="watchlist">Watchlist</p>
+        `
+    }
+})

@@ -174,10 +174,15 @@ nav > a {
     color: rgba(17, 24, 39, 1);
 }
 
-.add-to-watchlist {
+.watchlist-toggle {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.toggle-watchlist-icon {
+    width: 16px;
+    height: 16px;
 }
 
 /* Plot */
