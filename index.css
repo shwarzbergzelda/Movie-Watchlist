@@ -104,9 +104,11 @@ nav > a {
     width: 100px;
 }
 
-.explore-header {
+.movies-container-header {
     font-size: 30px;
     color: rgba(223, 221, 221, 1);
+    text-align: center;
+    width: 600px;
 }
 
 /* Movie card */

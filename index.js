@@ -12,6 +12,11 @@ searchForm.addEventListener('submit', (e) => {
     fetch(`${url}&s=${encodeURIComponent(searchInput)}&type=movie`)
         .then(response => response.json())
         .then(data => {
+            if (data.Response === "False") {
+                renderSearchFail()
+                return;
+            }
+
             imdbIDs = data.Search.map((movie) => movie.imdbID)
             
             const movies = []
@@ -27,6 +32,12 @@ searchForm.addEventListener('submit', (e) => {
             })
         })
 })
+
+function renderSearchFail() {
+    moviesContainer.innerHTML = `
+        <h2 class="movies-container-header">Unable to find what you're looking for. Please try another search.</h2>
+    `
+}
 
 function renderMovies(movies) {
     const moviesHTML = movies.map((movie) => {
