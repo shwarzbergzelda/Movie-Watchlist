@@ -48,7 +48,7 @@ nav > a {
     border: 1px solid rgba(209, 213, 219, 1);
     border-radius: 6px;
     justify-content: space-between;
-    width: min(700px, 90%);
+    width: 700px;
     overflow: hidden;
     height: 60px;
     margin: -30px auto 0;
@@ -107,4 +107,81 @@ nav > a {
 .explore-header {
     font-size: 30px;
     color: rgba(223, 221, 221, 1);
+}
+
+/* Movie card */
+
+.movie-card {
+    width: 700px;
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    font-family: "Inter", sans-serif;
+    column-gap: 20px;
+    padding: 24px 0;
+    border-bottom: 2px solid rgba(229, 231, 235, 1);
+}
+
+.movie-poster {
+    width: 150px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.movie-header {
+    display: grid;
+    grid-template-columns: repeat 2fr (2, 1fr);
+}
+
+.movie-details {
+    display: grid;
+    row-gap: 8px;
+    align-content: center;
+}
+
+.movie-details h2,
+.movie-details p {
+    margin: 5px 0;
+}
+
+/* title, star, and rating */
+
+.movie-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    padding-right: 10px;
+}
+
+.rating-icon {
+    width: 15px;
+}
+
+.imdb-rating {
+    font-weight: 400;
+}
+
+.movie-meta {
+    display: flex;
+    gap: 20px;
+    color: rgba(17, 24, 39, 1);
+}
+
+.add-to-watchlist {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Plot */
+
+.plot {
+    color: rgba(107, 114, 128, 1);
+    font-size: 20px;
+    line-height: 27px;
 }
