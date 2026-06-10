@@ -192,3 +192,25 @@ nav > a {
     font-size: 20px;
     line-height: 27px;
 }
+
+/* Watchlist Page */
+
+.search-movies {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-movies > img {
+    width: 25px;
+}
+
+.search-movies > p {
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.search-movies > p > a {
+    text-decoration: none;
+    color: black;
+}

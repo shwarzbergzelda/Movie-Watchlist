@@ -7,6 +7,7 @@ const movies = []
 if (searchForm) { // only run the following code if on the main homepage with the search bar
     searchForm.addEventListener('submit', (e) => {
         e.preventDefault()
+        movies.length = 0
     
         const url = 'http://www.omdbapi.com/?apikey=b88f89ad'
         const formData = new FormData(searchForm)
@@ -142,3 +143,15 @@ document.addEventListener('click', (e) => {
         `
     }
 })
+
+if (window.location.pathname.endsWith('watchlist.html')) {
+    if (!watchlist.length) {
+        moviesContainer.innerHTML = `
+            <h2 class="movies-container-header">Your watchlist is looking a little empty...</h2>
+            <div class="search-movies">
+                <img src="./images/add-icon.png" alt="add movies icon">
+                <p><a href="index.html">Let's add some movies!<a></p>
+            </div>
+        `
+    }
+}
