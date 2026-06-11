@@ -9,7 +9,7 @@ if (searchForm) { // only run the following code if on the main homepage with th
         e.preventDefault()
         movies.length = 0
     
-        const url = 'http://www.omdbapi.com/?apikey=b88f89ad'
+        const url = 'https://www.omdbapi.com/?apikey=b88f89ad'
         const formData = new FormData(searchForm)
         const searchInput = formData.get('search-input')
         let imdbIDs = []
