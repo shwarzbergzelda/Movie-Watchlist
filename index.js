@@ -42,6 +42,8 @@ function renderSearchFail() {
     moviesContainer.innerHTML = `
         <h2 class="movies-container-header">Unable to find what you're looking for. Please try another search.</h2>
     `
+
+    moviesContainger.classList.add('empty')
 }
 
 function renderMovies(movies) {
@@ -75,14 +77,25 @@ function renderMovies(movies) {
                         ${runtime ? `<p class="runtime">${runtime}</p>` : ''}
                         ${genre ? `<p class="genre">${genre}</p>` : ''}
                         <div class="watchlist-toggle">
-                            ${
+                        ${
+                            window.location.pathname.endsWith('watchlist.html') ?
+                                `<img
+                                    data-imdb-id="${imdbID}" 
+                                    class="remove-from-watchlist toggle-watchlist-icon" 
+                                    src="./images/remove-icon.png" 
+                                    alt="remove movie icon"
+                                >
+                                <p class="remove">Remove</p>`
+                            :
+                                window.location.pathname.endsWith('index.html') &&
                                 watchlist.some(movie => movie.imdbID === imdbID) 
                                 ? `
                                 <img
                                     data-imdb-id="${imdbID}" 
                                     class="remove-from-watchlist toggle-watchlist-icon" 
                                     src="./images/remove-icon.png" 
-                                    alt="remove movie icon">` 
+                                    alt="remove movie icon">
+                                    <p class="watchlist">Watchlist</p>` 
                                     
                                 : `
                                 <img 
@@ -90,8 +103,8 @@ function renderMovies(movies) {
                                     class="add-to-watchlist toggle-watchlist-icon" 
                                     src="./images/add-icon.png" 
                                     alt="add movie icon">
-                                `}
-                            <p class="watchlist">Watchlist</p>
+                                    <p class="watchlist">Watchlist</p>`
+                                }
                         </div>
                     </div>
                     <p class="plot">${plot}</p>
@@ -104,12 +117,11 @@ function renderMovies(movies) {
 }
 
 document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('add-to-watchlist')) {
+    if (e.target.classList.contains('add-to-watchlist') && window.location.pathname.endsWith('index.html')) {
 
         // add movie selected to localStorage
         const imdbID = e.target.dataset.imdbId
         const movieToAdd = movies.find((movie) => movie.imdbID === imdbID)
-        console.log(movieToAdd)
 
         if (!watchlist.some(movie => movie.imdbID === imdbID)) {
             watchlist.push(movieToAdd)
@@ -125,7 +137,7 @@ document.addEventListener('click', (e) => {
         `
     }
 
-    if (e.target.classList.contains('remove-from-watchlist')) {
+    if (e.target.classList.contains('remove-from-watchlist') && window.location.pathname.endsWith('index.html')) {
         const imdbID = e.target.dataset.imdbId
         
         watchlist = watchlist.filter((movie) => movie.imdbID !== imdbID)
@@ -142,16 +154,41 @@ document.addEventListener('click', (e) => {
             <p class="watchlist">Watchlist</p>
         `
     }
+
+    if (e.target.classList.contains('remove-from-watchlist') && window.location.pathname.endsWith('watchlist.html')) {
+        const imdbID = e.target.dataset.imdbId
+        
+        watchlist = watchlist.filter((movie) => movie.imdbID !== imdbID)
+        
+        if (!watchlist.length) {
+            localStorage.removeItem('watchlist')
+            renderWatchlistPage()
+
+        } else {
+            localStorage.setItem('watchlist', JSON.stringify(watchlist))
+            renderMovies(watchlist)
+        }
+    }
 })
 
-if (window.location.pathname.endsWith('watchlist.html')) {
-    if (!watchlist.length) {
-        moviesContainer.innerHTML = `
-            <h2 class="movies-container-header">Your watchlist is looking a little empty...</h2>
-            <div class="search-movies">
-                <img src="./images/add-icon.png" alt="add movies icon">
-                <p><a href="index.html">Let's add some movies!<a></p>
-            </div>
-        `
+function renderWatchlistPage() {
+    if (window.location.pathname.endsWith('watchlist.html')) {
+        if (!watchlist.length) {
+            moviesContainer.classList.add('empty')
+    
+            moviesContainer.innerHTML = `
+                <h2 class="movies-container-header">Your watchlist is looking a little empty...</h2>
+                <div class="search-movies">
+                    <a href="index.html">
+                        <img src="./images/add-icon.png" alt="add movies icon">
+                        <p>Let's add some movies!</p>
+                    <a>
+                </div>
+            `
+        } else {
+            renderMovies(watchlist)
+        }
     }
 }
+
+renderWatchlistPage()
